@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--192.168.8.104:8080-->
+<html>
+    <head>
+        <link rel="stylesheet" href="/static/style.css?version=25">
+        <meta http-equiv="refresh" content="1">
+    </head>
+
+    <body>
+
+        <h1>If temperature outside > inside, then open window.</h1>
+        
+        {% block content %}
+
+        <div class="row">
+            <div class="column">
+                <h2 class="heading_sensor">Sensor 1 - Outside temperature</h2>
+                <p class="sensor_value">{{data["sensor1_value"]}}</p>
+            </div>
+            <div class="column">
+                <h2 class="heading_sensor">Sensor 2 - Inside temperature</h2>
+                <p class="sensor_value">{{data["sensor2_value"]}}</p>
+            </div>
+            <div class="column">
+                <h2 class="heading_actuator">Actuator - Window</h2>
+
+                {% if data["open"] %}
+                    <p style="font-size: 100px; font-weight: bold; text-align: center; color: rgb(71, 148, 56);">Window OPEN</p>
+                {% else %}
+                    <p style="font-size: 100px; font-weight: bold; text-align: center; color: rgb(148, 56, 56);">Window CLOSED</p>
+                {% endif %}
+                <button id="button_override" onclick="myFunction()" disabled>Override window (TODO)</button>
+            </div>
+        </div>
+
+        {% endblock content %}
+    </body>
+</html>

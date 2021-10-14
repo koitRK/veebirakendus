@@ -1,0 +1,46 @@
+* {
+    box-sizing: border-box;
+  }
+
+body {
+    background-color: rgb(3, 3, 37);
+}
+  
+h1 {
+    color: rgb(255, 255, 255);
+    margin-left: 20px;
+}
+
+.row {
+    display: flex;
+}
+  
+/* Create two equal columns that sits next to each other */
+.column {
+    flex: 50%;
+    padding: 10px;
+}
+
+.heading_sensor {
+    background-color:rgb(60, 146, 71);
+    font-size: 40px;
+    text-align: center;
+}
+
+.heading_actuator {
+    background-color:rgb(148, 56, 56);
+    font-size: 40px;
+    text-align: center;
+}
+
+.sensor_value {
+    font-size: 100px;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+}
+
+#button_override {
+    font-size: 40px;
+    padding: 10px 60px 10px 60px;
+}

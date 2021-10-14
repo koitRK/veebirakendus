@@ -1,50 +1,53 @@
-"""
-Very simple HTTP server in python for logging requests
-Usage::
-    ./server.py [<port>]
-"""
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import logging
+from os import SCHED_RESET_ON_FORK
+from typing import Counter
+from flask import Flask, request, render_template
+app = Flask(__name__)
+
+python_data = {"sensor1_value": 0, "sensor2_value": 0, "counter": 0, "open": 1}
 
 
-class S(BaseHTTPRequestHandler):
-    def _set_response(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
+def sensor_value_updated():
+    global python_data
 
-    def do_GET(self):
-        logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
-        self._set_response()
-        self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
-
-    def do_POST(self):
-        content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
-        post_data = self.rfile.read(content_length) # <--- Gets the data itself
-        logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
-                str(self.path), str(self.headers), post_data.decode('utf-8'))
-
-        self._set_response()
-        self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
-
-
-def run(server_class=HTTPServer, handler_class=S, port=8080):
-    logging.basicConfig(level=logging.INFO)
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    logging.info('Starting httpd...\n')
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    httpd.server_close()
-    logging.info('Stopping httpd...\n')
-
-
-if __name__ == '__main__':
-    from sys import argv
-
-    if len(argv) == 2:
-        run(port=int(argv[1]))
+    if python_data["sensor1_value"] > python_data['sensor2_value']:
+        python_data["open"] = 1
     else:
-        run()
+        python_data["open"] = 0
+
+
+@app.route('/main', methods=['GET', 'POST'])
+def main():
+
+    return render_template('index.html', data=python_data)
+
+
+@app.route('/sensor1/<int:value>')
+def sensor1(value):
+    global python_data
+
+    python_data['sensor1_value'] = value
+    python_data['counter'] += 1
+
+    sensor_value_updated()
+
+    return 'OK! Sensor1 value: ' + str(value), 200
+
+
+@app.route('/sensor2/<int:value>')
+def sensor2(value):
+    global python_data
+
+    python_data['sensor2_value'] = value
+    python_data['counter'] += 1
+
+    sensor_value_updated()
+
+    return 'OK! Sensor2 value: ' + str(value), 200
+
+
+@app.route('/actuator')
+def actuator():
+
+    if python_data["open"]:
+        return "Window OPEN", 200
+    return "Window CLOSE", 200
